@@ -1,7 +1,3 @@
-csit832a1ll/
-llist/csit832a1llist/
+csit832a2/
 *.exe
-llist/source/test
-csit832a1bt/
-*.gch
-bstree/source/test
+*.o
