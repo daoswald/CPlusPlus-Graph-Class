@@ -36,7 +36,7 @@ template< class VertexT=char >
 class Graph {
   public:
     Graph(bool is_directed = true) { directed = is_directed; return;};
-//  ~Graph(){}; // or destructor.
+//    ~Graph(){}
     bool add_vertex( VertexT V ); // Tested.
 	int get_vertices( std::vector<VertexT>& vertices ); // Tested.
 	int num_vertices();
@@ -52,12 +52,12 @@ class Graph {
     );
   private:
     int  index_is( VertexT v );
-    VertexT vertex_is( int i );
+    VertexT vertex_is( unsigned i );
 
 	bool directed;
     std::vector< std::vector< int > > matrix;
-    std::map< VertexT, int > v_to_i;   // Map Vertices to indices in the matrix.
-    std::map< int, VertexT > i_to_v;   // Map indices in the matrix to Vertices.
+    std::map< VertexT, int > v_to_i;    // Map Vertices to indices in the matrix.
+    std::vector< VertexT >   i_to_v;	// Crossreference indices in the matrix to Vertices.
 };
 
 #include "graph.cpp"

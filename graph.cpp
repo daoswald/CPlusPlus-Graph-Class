@@ -46,10 +46,9 @@ bool Graph<VertexT>::add_vertex( VertexT v )
         return false; // The vertex already existed.
 	
 	// Next, the index to vertex crossref.
-	pair< map<int,VertexT>::iterator,bool > i_to_v_ret;
 	try
 	{
-		i_to_v_ret = i_to_v.insert( pair< int, VertexT >( i_to_v.size() ,v ) );
+		i_to_v.push_back( v );
 	}
 	catch( std::bad_alloc& ba )
 	{
@@ -58,12 +57,6 @@ bool Graph<VertexT>::add_vertex( VertexT v )
 			"add_vertex(): Failed to allocate memory for new vertex."
 		) );
 	}
-
-	// This should be totally impossible, but we're just playing it safe.
-    if( !i_to_v_ret.second )
-        throw( runtime_error(
-            "Can't use the same index twice in Graph::add_vertex()\n"
-        ) );
 
     // Add a column to each existing row of the matrix for this new vertex.
     vector<vector<int> >::iterator it;
@@ -102,11 +95,10 @@ int Graph<VertexT>::get_vertices( std::vector<VertexT>& vertices )
 	using std::map;
 	using std::pair;
 	int size = num_vertices();
-	map<int,VertexT>::iterator vit;
+	vector<VertexT>::iterator vit;
 	for( vit = i_to_v.begin(); vit != i_to_v.end(); vit++ )
 	{
-		pair<int,VertexT> element = *vit;
-		vertices.push_back( element.second );
+		vertices.push_back( *vit );
 	}
 	return size;
 }
@@ -189,18 +181,16 @@ int Graph<VertexT>::index_is( VertexT v )
 
 // Get the vertex for index i.  Throw if vertex not found.
 template<class VertexT>
-VertexT Graph<VertexT>::vertex_is( int i )
+VertexT Graph<VertexT>::vertex_is( unsigned i )
 {
     using std::map;
     using std::runtime_error;
-    map<int,VertexT>::iterator vertex_it;
-    vertex_it = i_to_v.find( i );
-    if( vertex_it == i_to_v.end() )
-        throw( runtime_error( 
-			"vertex_is(): No vertex exists for that index." 
+	if( i < 0 || i > i_to_v.size() - 1 )
+		throw( runtime_error(
+			"vertex_is() called on an out of range index: No vertex by that index."
 		) );
-    else
-        return vertex_it->second;
+	else
+		return i_to_v[i];
 }
 
 
