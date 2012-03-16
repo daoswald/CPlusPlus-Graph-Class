@@ -1,6 +1,7 @@
 
 #include "graph.h"
 
+#include <string>
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -10,47 +11,53 @@ using namespace std;
 
 // This facilitates passing our own comparator function to the priority queue used by Graph::get_adjacent().
 // While a typedef is never essential, it cleans up the syntax within the program's main logic.  See 'graph.h' for details.
-typedef std::priority_queue< std::pair<char,int>, std::vector< std::pair<char,int> >, PairComparator< char, int > > char_intPQ;
+typedef std::priority_queue< std::pair<string,int>, std::vector< std::pair<string,int> >, PairComparator< string > > char_intPQ;
 
 int main()
 {
-    Graph x;
-    x.add_vertex( 'A' );
-    x.add_vertex( 'B' );
-    x.add_vertex( 'C' );
-	vector<char> vertices;
+    Graph<string> x(DIRECTED);
+    x.add_vertex( "Porto" );
+    x.add_vertex( "Salt Lake City" );
+    x.add_vertex( "Manila" );
+	vector<string> vertices;
 	int num_vertices = x.get_vertices( vertices );
 	cout << "Vertices: " << num_vertices << endl;
-	for( vector<char>::iterator vit = vertices.begin(); vit != vertices.end(); vit++ )
+	for( vector<string>::iterator vit = vertices.begin(); vit != vertices.end(); vit++ )
 		cout << "Vertex: " << *vit << endl;
 	
-	x.add_edge( 'A', 'C', 2 );
-	cout << "Edge A-B: ";
-	if( x.edge_exists( 'A', 'B' ) )
-		cout << "exists.\n";
-	else
-		cout << "doesn't exist.\n";
-	cout << "Edge A-C: ";
-	if( x.edge_exists( 'A', 'C' ) )
+	x.add_edge( "Porto", "Manila", 2 );
+	cout << "Edge Porto-Salt Lake City: ";
+	if( x.edge_exists( "Porto", "Salt Lake City" ) )
 		cout << "exists.\n";
 	else
 		cout << "doesn't exist.\n";
 
-	x.add_edge( 'A', 'B', 1 );
+	cout << "Edge Porto-Manila: ";
+	if( x.edge_exists( "Porto", "Manila" ) )
+		cout << "exists.\n";
+	else
+		cout << "doesn't exist.\n";
+	cout << "Edge Manila-Porto: ";
+	if( x.edge_exists( "Manila", "Porto" ) )
+		cout << "exists.\n";
+	else
+		cout << "doesn't exist.\n";
 
-	cout << "All edges for 'A' are: " << endl;
+	x.add_edge( "Porto", "Salt Lake City", 1 );
+
+	cout << "All edges for 'Porto' are: " << endl;
 	char_intPQ pq;
-	x.get_adjacent( 'A', pq );
+	x.get_adjacent( "Porto", pq );
 	while( !pq.empty() )
 	{
-		pair<char,int> edge = pq.top();
+		pair<string,int> edge = pq.top();
 		cout << "\t" << edge.first << " => " << edge.second << ".\n";
 		pq.pop();
 	}
 
-	x.delete_edge( 'A', 'C' );
-	cout << "Now edge A-C: ";
-	if( x.edge_exists( 'A', 'C' ) )
+	x.delete_edge( "Porto", "Manila" );
+	cout << "Now edge Porto-Manila: ";
+	if( x.edge_exists( "Porto", "Manila" ) )
 		cout << "exists.\n";
 	else
 		cout << "doesn't exist.\n";

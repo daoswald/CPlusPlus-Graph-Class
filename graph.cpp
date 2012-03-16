@@ -1,6 +1,4 @@
 
-#include "graph.h"
-
 #include <stdexcept>                // runtime_error()
 #include <vector>                   // vector, vector<>::iterator
 #include <map>                      // map, pair
@@ -11,8 +9,8 @@
 // Throws under the impossible condition of an attempt to add to same
 // index twice.  
 // Also throws if is_full() returns true, or if any memory allocation fails.
-
-bool Graph::add_vertex( char v )
+template<class VertexT>
+bool Graph<VertexT>::add_vertex( VertexT v )
 {
     using std::map;
     using std::vector;
@@ -31,10 +29,10 @@ bool Graph::add_vertex( char v )
 
     // Add the vertex to our crossreference lookups.
 	// First, the vertex to index crossref.
-	pair< map< char, int >::iterator,bool > v_to_i_ret;
+	pair< map< VertexT, int >::iterator,bool > v_to_i_ret;
 	try
 	{ 
-	    v_to_i_ret = v_to_i.insert( pair< char, int >( v, v_to_i.size() ) );
+	    v_to_i_ret = v_to_i.insert( pair< VertexT, int >( v, v_to_i.size() ) );
 	}
 	catch( std::bad_alloc& ba )
 	{
@@ -48,10 +46,10 @@ bool Graph::add_vertex( char v )
         return false; // The vertex already existed.
 	
 	// Next, the index to vertex crossref.
-	pair< map<int,char>::iterator,bool > i_to_v_ret;
+	pair< map<int,VertexT>::iterator,bool > i_to_v_ret;
 	try
 	{
-		i_to_v_ret = i_to_v.insert( pair< int, char >( i_to_v.size() ,v ) );
+		i_to_v_ret = i_to_v.insert( pair< int, VertexT >( i_to_v.size() ,v ) );
 	}
 	catch( std::bad_alloc& ba )
 	{
@@ -73,7 +71,7 @@ bool Graph::add_vertex( char v )
 	{
 		try
 		{
-	        it->push_back( 0 );
+	        it->push_back( NON_EDGE );
 		}
 		catch( std::bad_alloc& ba )
 		{
@@ -89,7 +87,7 @@ bool Graph::add_vertex( char v )
     // new row.
 
     // Add a new row to the matrix for this new vertex.
-    vector<int> row( v_to_i.size(), 0 ); // Create a new row to insert
+    vector<int> row( v_to_i.size(), NON_EDGE ); // Create a new row to insert
     matrix.push_back( row );
 
     return true;
@@ -98,22 +96,24 @@ bool Graph::add_vertex( char v )
 
 // Passes by reference a vector containing all the vertex names.
 // Returns a vertex count.
-int Graph::get_vertices( std::vector<char>& vertices )
+template<class VertexT>
+int Graph<VertexT>::get_vertices( std::vector<VertexT>& vertices )
 {
 	using std::map;
 	using std::pair;
 	int size = num_vertices();
-	map<int,char>::iterator vit;
+	map<int,VertexT>::iterator vit;
 	for( vit = i_to_v.begin(); vit != i_to_v.end(); vit++ )
 	{
-		pair<int,char> element = *vit;
+		pair<int,VertexT> element = *vit;
 		vertices.push_back( element.second );
 	}
 	return size;
 }
 
 // Returns a vertex count.
-int Graph::num_vertices()
+template<class VertexT>
+int Graph<VertexT>::num_vertices()
 {
 	using std::runtime_error;
 	if( i_to_v.size() != v_to_i.size() || v_to_i.size() != matrix.size() )
@@ -125,7 +125,8 @@ int Graph::num_vertices()
 
 // Removes all vertices.
 // Clears the matrix.
-void Graph::make_empty()
+template<class VertexT>
+void Graph<VertexT>::make_empty()
 {
 	using std::runtime_error;
     v_to_i.clear();
@@ -139,7 +140,8 @@ void Graph::make_empty()
 }
 
 // Returns true if the graph is empty.
-bool Graph::is_empty()
+template<class VertexT>
+bool Graph<VertexT>::is_empty()
 {
 	using std::runtime_error;
 	if( i_to_v.empty() != v_to_i.empty() || v_to_i.empty() != matrix.empty() )
@@ -153,7 +155,8 @@ bool Graph::is_empty()
 // a vector matrix and maps, running out of room is synonymous with running
 // out of heap space (memory).  We probably should just be handling that sort
 // of situation via exceptions, since memory shortages are exceptional cases.
-bool Graph::is_full()
+template<class VertexT>
+bool Graph<VertexT>::is_full()
 {
     // First, check to see if we can fit another vertex in our maps.
     // Also check whether our matrix can hold another row.  We subtract one
@@ -172,10 +175,11 @@ bool Graph::is_full()
 
 
 // Get the index of a vertex v.  Return -1 if not found.
-int Graph::index_is( char v )
+template<class VertexT>
+int Graph<VertexT>::index_is( VertexT v )
 {
     using std::map;
-    map<char,int>::iterator idx_it;
+    map<VertexT,int>::iterator idx_it;
     idx_it = v_to_i.find( v );
     if( idx_it == v_to_i.end() )
         return -1;  // Sentinal flag: Vertex doesn't exist!
@@ -184,11 +188,12 @@ int Graph::index_is( char v )
 }
 
 // Get the vertex for index i.  Throw if vertex not found.
-char Graph::vertex_is( int i )
+template<class VertexT>
+VertexT Graph<VertexT>::vertex_is( int i )
 {
     using std::map;
     using std::runtime_error;
-    map<int,char>::iterator vertex_it;
+    map<int,VertexT>::iterator vertex_it;
     vertex_it = i_to_v.find( i );
     if( vertex_it == i_to_v.end() )
         throw( runtime_error( 
@@ -201,7 +206,8 @@ char Graph::vertex_is( int i )
 
 // Adds an edge.  Returns false under the condition that either vertex
 // doesn't exist.  Will blindly modify an existing edge.
-bool Graph::add_edge( char va, char vb, int weight )
+template<class VertexT>
+bool Graph<VertexT>::add_edge( VertexT va, VertexT vb, int weight )
 {
     int row = index_is( va );
     int col = index_is( vb );
@@ -217,11 +223,12 @@ bool Graph::add_edge( char va, char vb, int weight )
 
 // Returns true if an edge exists.  False if edge doesn't exist, or
 // also if one of the specified vertices doesn't exist.
-bool Graph::edge_exists( char va, char vb )
+template<class VertexT>
+bool Graph<VertexT>::edge_exists( VertexT va, VertexT vb )
 {
     int row = index_is( va );
     int col = index_is( vb );
-    if( row >= 0 && col >= 0 && matrix[row][col] != 0 )
+    if( row >= 0 && col >= 0 && matrix[row][col] != NON_EDGE )
         return true;
     else
         return false;
@@ -232,7 +239,8 @@ bool Graph::edge_exists( char va, char vb )
 // Throws if one or more of the vertices doesn't exist.
 // While that should reflect a logic error, it's not necessarily
 // a fatal issue.  Perhaps I could re-implement as a bool return.
-void Graph::delete_edge( char va, char vb )
+template<class VertexT>
+void Graph<VertexT>::delete_edge( VertexT va, VertexT vb )
 {
 	using std::runtime_error;
     int row = index_is( va );
@@ -242,15 +250,16 @@ void Graph::delete_edge( char va, char vb )
 			"delete_edge(): Attempt to delete an edge with invalid vertex."
 		) );
     if( row >= 0 && col >= 0 )
-        matrix[row][col] = 0;
-		if( !directed ) matrix[col][row] = 0; // non-directed implemented as automatic direct-back.
+        matrix[row][col] = NON_EDGE;
+		if( !directed ) matrix[col][row] = NON_EDGE; // non-directed implemented as automatic direct-back.
     return;
 }
 
 
 // Returns the weight of an edge.  Throws if a vertex doesn't exist.
-// If an edge doesn't exist, returns 0.
-int Graph::get_weight( char va, char vb )
+// If an edge doesn't exist, returns NON_EDGE, which is defined as 0.
+template<class VertexT>
+int Graph<VertexT>::get_weight( VertexT va, VertexT vb )
 {
 	using std::runtime_error;
     int row = index_is( va );
@@ -267,8 +276,9 @@ int Graph::get_weight( char va, char vb )
 // Just a stub for now.
 // Scan the row and the column that 'v' appears in, pushing onto the queue
 // the vertex name and the weight to get to it for each adjacency.
-void Graph::get_adjacent(
-    char v, std::priority_queue< std::pair<char,int>, std::vector< std::pair<char,int> >, PairComparator< char, int > >& pq
+template<class VertexT>
+void Graph<VertexT>::get_adjacent(
+    VertexT v, std::priority_queue< std::pair<VertexT,int>, std::vector< std::pair<VertexT,int> >, PairComparator< VertexT > >& pq
 )
 {
 	using std::runtime_error;
@@ -281,8 +291,8 @@ void Graph::get_adjacent(
 	for( unsigned c_ix = 0; c_ix < matrix[r_ix].size(); c_ix++ )
 		if( int weight = matrix[r_ix][c_ix] )
 		{
-			char vb = vertex_is( c_ix );
-			pq.push( pair<char,int>( vb, weight ) );
+			VertexT vb = vertex_is( c_ix );
+			pq.push( pair<VertexT,int>( vb, weight ) );
 		}
 	return;
 }
