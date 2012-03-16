@@ -3,15 +3,22 @@
 
 #include <string>
 #include <iostream>
-#include <vector>
-#include <queue>
-#include <map>
+#include <vector>	// std::vector
+#include <queue>	// std::priority_queue
+#include <map>		// std::pair
 
 using namespace std;
 
-// This facilitates passing our own comparator function to the priority queue used by Graph::get_adjacent().
-// While a typedef is never essential, it cleans up the syntax within the program's main logic.  See 'graph.h' for details.
-typedef std::priority_queue< std::pair<string,int>, std::vector< std::pair<string,int> >, PairComparator< string > > char_intPQ;
+// This facilitates passing our own comparator function to the priority queue
+// used by Graph::get_adjacent().
+// While a typedef is never essential, it cleans up the syntax within the 
+// program's main logic.  See 'graph.h' for details.
+typedef std::priority_queue< 
+			std::pair<string,int>, 
+			std::vector< std::pair<string,int> >, 
+			PairComparator< string > 
+> string_intPQ;
+
 
 int main()
 {
@@ -46,7 +53,7 @@ int main()
 	x.add_edge( "Porto", "Salt Lake City", 1 );
 
 	cout << "All edges for 'Porto' are: " << endl;
-	char_intPQ pq;
+	string_intPQ pq;
 	x.get_adjacent( "Porto", pq );
 	while( !pq.empty() )
 	{

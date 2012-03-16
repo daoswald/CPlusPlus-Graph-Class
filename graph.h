@@ -1,3 +1,6 @@
+// graph.h.  Template class declarations for the Graph class.
+// "#include"s the graph.cpp file at the end of this file.
+
 
 #include <vector>                   // vector, vector<>::iterator
 #include <map>                      // map, map<>::iterator, pair
@@ -18,7 +21,10 @@ const int  NON_EDGE     = 0;
 // A comparator class for priority queues.
 template< typename VertexT >
 struct PairComparator {
-	bool operator()( const std::pair<VertexT,int>& p1, const std::pair<VertexT, int>& p2 ) const 
+	bool operator()( 
+		const std::pair<VertexT,int>& p1, 
+		const std::pair<VertexT, int>& p2 
+	) const 
     {  
 		if( p1.second > p2.second ) 
 			return true;
@@ -70,5 +76,6 @@ class Graph {
     std::map< VertexT, int >          v_to_i;   // Map Vertices to indices.
     std::vector< VertexT >            i_to_v;	// xref indices to Vertices.
 };
+
 
 #include "graph.cpp"

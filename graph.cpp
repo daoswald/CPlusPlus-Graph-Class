@@ -36,7 +36,8 @@ bool Graph<VertexT>::add_vertex( VertexT v )
 	}
 	catch( std::bad_alloc& ba )
 	{
-		std::cerr << "Bad Allocation caught adding to map: " << ba.what() << std::endl;
+		std::cerr << "Bad Allocation caught adding to map: " 
+				  << ba.what() << std::endl;
 		throw( runtime_error(
 			"add_vertex(): Failed to allocate memory for new vertex."
 		) );
@@ -52,7 +53,8 @@ bool Graph<VertexT>::add_vertex( VertexT v )
 	}
 	catch( std::bad_alloc& ba )
 	{
-		std::cerr << "Bad Allocation caught adding to index: " << ba.what() << std::endl;
+		std::cerr << "Bad Allocation caught adding to index: " 
+				  << ba.what() << std::endl;
 		throw( runtime_error(
 			"add_vertex(): Failed to allocate memory for new vertex."
 		) );
@@ -68,7 +70,8 @@ bool Graph<VertexT>::add_vertex( VertexT v )
 		}
 		catch( std::bad_alloc& ba )
 		{
-			std::cerr << "Bad Allocation caught adding to matrix: " << ba.what() << std::endl;
+			std::cerr << "Bad Allocation caught adding to matrix: " 
+					  << ba.what() << std::endl;
 			throw( runtime_error(
 				"add_vertex(): Failed to allocate memory for new vertex."
 			) );
@@ -205,7 +208,8 @@ bool Graph<VertexT>::add_edge( VertexT va, VertexT vb, int weight )
         return false;
     else {
         matrix[row][col] = weight;
-		if( !directed ) matrix[col][row] = weight; // We implement non-directed as auto-two-way-direction.
+		// We implement non-directed as auto-two-way-direction.
+		if( !directed ) matrix[col][row] = weight;
         return true;
     }
 }
@@ -241,7 +245,8 @@ void Graph<VertexT>::delete_edge( VertexT va, VertexT vb )
 		) );
     if( row >= 0 && col >= 0 )
         matrix[row][col] = NON_EDGE;
-		if( !directed ) matrix[col][row] = NON_EDGE; // non-directed implemented as automatic direct-back.
+		// non-directed implemented as automatic direct-back (2-way direction).
+		if( !directed ) matrix[col][row] = NON_EDGE;
     return;
 }
 
@@ -263,12 +268,14 @@ int Graph<VertexT>::get_weight( VertexT va, VertexT vb )
 }
 
 
-// Just a stub for now.
-// Scan the row and the column that 'v' appears in, pushing onto the queue
-// the vertex name and the weight to get to it for each adjacency.
+// Scan all the columns for the Vertex's row in the matrix.
+// Any non-zero column is an edge.
 template<class VertexT>
 void Graph<VertexT>::get_adjacent(
-    VertexT v, std::priority_queue< std::pair<VertexT,int>, std::vector< std::pair<VertexT,int> >, PairComparator< VertexT > >& pq
+    VertexT v, 
+	std::priority_queue< std::pair<VertexT,int>, 
+						 std::vector< std::pair<VertexT,int> >, 
+						 PairComparator< VertexT > >& pq
 )
 {
 	using std::runtime_error;
