@@ -55,7 +55,7 @@ class Graph {
 	int  num_vertices();
     void make_empty();
     bool is_empty();
-    bool is_full();
+    bool is_full() const;
     bool add_edge( VertexT va, VertexT vb, int weight = 1 );
     bool edge_exists( VertexT va, VertexT vb ); // Assignment 2.
     void delete_edge( VertexT va, VertexT vb ); // Assignment 2.

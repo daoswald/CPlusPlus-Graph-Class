@@ -1,3 +1,4 @@
 csit832a2/
 *.exe
 *.o
+*.cppcheck

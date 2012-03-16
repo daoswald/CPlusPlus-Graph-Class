@@ -62,7 +62,7 @@ bool Graph<VertexT>::add_vertex( VertexT v )
 
     // Add a column to each existing row of the matrix for this new vertex.
     vector<vector<int> >::iterator it;
-    for( it=matrix.begin(); it < matrix.end(); it++ )
+    for( it=matrix.begin(); it < matrix.end(); ++it )
 	{
 		try
 		{
@@ -99,7 +99,7 @@ int Graph<VertexT>::get_vertices( std::vector<VertexT>& vertices )
 	using std::pair;
 	int size = num_vertices();
 	vector<VertexT>::iterator vit;
-	for( vit = i_to_v.begin(); vit != i_to_v.end(); vit++ )
+	for( vit = i_to_v.begin(); vit != i_to_v.end(); ++vit )
 	{
 		vertices.push_back( *vit );
 	}
@@ -151,7 +151,7 @@ bool Graph<VertexT>::is_empty()
 // out of heap space (memory).  We probably should just be handling that sort
 // of situation via exceptions, since memory shortages are exceptional cases.
 template<class VertexT>
-bool Graph<VertexT>::is_full()
+bool Graph<VertexT>::is_full() const
 {
     // First, check to see if we can fit another vertex in our maps.
     // Also check whether our matrix can hold another row.  We subtract one
@@ -188,7 +188,7 @@ VertexT Graph<VertexT>::vertex_is( unsigned i )
 {
     using std::map;
     using std::runtime_error;
-	if( i < 0 || i > i_to_v.size() - 1 )
+	if( i > i_to_v.size() - 1 )
 		throw( runtime_error(
 			"vertex_is() called on an out of range index: No vertex by that index."
 		) );

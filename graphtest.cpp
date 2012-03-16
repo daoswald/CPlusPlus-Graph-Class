@@ -29,7 +29,7 @@ int main()
 	vector<string> vertices;
 	int num_vertices = x.get_vertices( vertices );
 	cout << "Vertices: " << num_vertices << endl;
-	for( vector<string>::iterator vit = vertices.begin(); vit != vertices.end(); vit++ )
+	for( vector<string>::iterator vit = vertices.begin(); vit != vertices.end(); ++vit )
 		cout << "Vertex: " << *vit << endl;
 	
 	x.add_edge( "Porto", "Manila", 2 );
