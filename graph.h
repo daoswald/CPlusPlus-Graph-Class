@@ -1,3 +1,8 @@
+// David Oswald
+// CSIT 832
+// Assignment 2: Graphs.
+
+
 // graph.h.  Template class declarations for the Graph class.
 // "#include"s the graph.cpp file at the end of this file.
 

@@ -1,3 +1,7 @@
+// David Oswald
+// CSIT 832
+// Assignment 2: Graphs.
+
 
 #include <stdexcept>                // runtime_error()
 #include <vector>                   // vector, vector<>::iterator
@@ -243,10 +247,9 @@ void Graph<VertexT>::delete_edge( VertexT va, VertexT vb )
 		throw( runtime_error(
 			"delete_edge(): Attempt to delete an edge with invalid vertex."
 		) );
-    if( row >= 0 && col >= 0 )
-        matrix[row][col] = NON_EDGE;
-		// non-directed implemented as automatic direct-back (2-way direction).
-		if( !directed ) matrix[col][row] = NON_EDGE;
+    matrix[row][col] = NON_EDGE;
+	// non-directed implemented as automatic direct-back (2-way direction).
+	if( !directed ) matrix[col][row] = NON_EDGE;
     return;
 }
 

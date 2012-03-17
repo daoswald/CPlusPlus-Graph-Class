@@ -1,3 +1,32 @@
+// David Oswald
+// CSIT 832
+// Assignment 2: Graphs.
+
+// Menu/Prompt-driven test driver for Graph class.
+// The graph class is template based so that the user may decide what type
+// of object should be used as vertices.  This driver uses a string vertex.
+// Edges have an integer weight.  Weights of 1 can be used to emulate a
+// non-weighted graph if that is preferred.
+
+// The Graph class uses an adjacency matrix stored as a vector of vectors.
+// It is not necessary to know beforehand how many vertices will be stored.
+// The user may keep adding them as long as memory permits.  With each new
+// vertex, a new row and column are added to the matrix, as well as a new
+// index/map to crossreference vertex names with matrix positions.
+
+// The Graph class also allows the user to specify (via the constructor)
+// whether the class should instantiate as a directed graph (default) or
+// an undirected graph.  This driver instantiates one of each for
+// comparison purposes.
+
+// User will be prompted for input.  The first thing to do would be to
+// type 'av', and follow the prompts to add a vertex.  Repeat that a few
+// times.  Then 'ae' to add an edge.  ...repeat that a few times too.
+// 'de' to delete an edge, if you wish.  'ee' to check edge existance.
+
+// Many other options are also available.  Have fun.
+//     -- Dave
+
 
 #include "graph.h"
 
@@ -19,97 +48,138 @@ typedef std::priority_queue<
 			PairComparator< string > 
 > string_intPQ;
 
-
+// Display functions.
 void output_intro();
-void report_state( Graph<string>& dg, Graph<string>& ug );
+void status_summary( Graph<string>& dg, Graph<string>& ug );
+void display_adjacencies( Graph<string>& graph, string va );
+void display_vertices( Graph<string>& graph );
 void list_commands();
+
+
+// Menu items (all functions beginning with option_XX)
+// Setters.
+void option_av( Graph<string>& dg, Graph<string>& ug ); // Add vertex.
+void option_ae( Graph<string>& dg, Graph<string>& ug ); // Add edge.
+void option_de( Graph<string>& dg, Graph<string>& ug ); // Delete edge.
+void option_me( Graph<string>& dg, Graph<string>& ug ); // Make [graphs] empty
+
+// Getters.
+void option_gv( Graph<string>& dg, Graph<string>& ug ); // Get list of verts.
+void option_gn( Graph<string>& dg, Graph<string>& ug ); // Get number of verts.
+void option_ee( Graph<string>& dg, Graph<string>& ug ); // Edge exists
+void option_gw( Graph<string>& dg, Graph<string>& ug ); // Get edge weight.
+void option_ga( Graph<string>& dg, Graph<string>& ug ); // Get adjacency list.
+void option_em( Graph<string>& dg, Graph<string>& ug ); // Is empty?
+void option_fl( Graph<string>& dg, Graph<string>& ug ); // Is full?
+void option_st( Graph<string>& dg, Graph<string>& ug ); // Display a status summary
+
+// Miscellaneous.
+// void option_qq() {} // Quit test application -- Implemented in-line, not as function.
+void option_hh(); // Display this help.
+
+
+// Enumerated value:   0       1   2   3   4   5   6   7   8   9  10  11  12  13 ... Must be our lucky day.
+enum command_option { av = 0, ae, de, me, gv, gn, ee, gw, ga, em, fl, st, qq, hh };
+
+int prompt( std::map<string,int>& options );
 
 int main()
 {
+	// Set up some option keys.
+	// Enumerates as:          0     1     2     3     4     5     6     7     8     9    10    11    12    13
+	string option_keys[] = { "av", "ae", "de", "me", "gv", "gn", "ee", "gw", "ga", "em", "fl", "st", "qq", "hh" };
+	std::map<string,int> option_map;
+	for( size_t ix = 0; ix < 14; ++ix )
+		option_map[ option_keys[ix] ] = ix;
+
 	output_intro();
+	list_commands();
+
 	cout << "- Instantiating directed graph, 'digraph', "
 		 << "and undirected graph, 'udgraph'." << endl;
-    Graph<string> digraph(DIRECTED);
+
+	Graph<string> digraph(DIRECTED);
 	Graph<string> udgraph(UNDIRECTED);
 
-	cout << "Initial state:" << endl;
-    digraph.add_vertex( "Porto" );
-	udgraph.add_vertex( "Porto" );
-    digraph.add_vertex( "Salt Lake City" );
-	udgraph.add_vertex( "Salt Lake City" );
-    digraph.add_vertex( "Manila" );
-	udgraph.add_vertex( "Manila" );
+	bool keep_going = true;
 
-	report_state( digraph, udgraph );
-	list_commands();
-	
-	digraph.add_edge( "Porto", "Manila", 2 );
-	cout << "Edge Porto-Salt Lake City: ";
-	if( digraph.edge_exists( "Porto", "Salt Lake City" ) )
-		cout << "exists.\n";
-	else
-		cout << "doesn't exist.\n";
-
-	cout << "Edge Porto-Manila: ";
-	if( digraph.edge_exists( "Porto", "Manila" ) )
-		cout << "exists.\n";
-	else
-		cout << "doesn't exist.\n";
-	cout << "Edge Manila-Porto: ";
-	if( digraph.edge_exists( "Manila", "Porto" ) )
-		cout << "exists.\n";
-	else
-		cout << "doesn't exist.\n";
-
-	digraph.add_edge( "Porto", "Salt Lake City", 1 );
-
-	cout << "All edges for 'Porto' are: " << endl;
-	string_intPQ pq;
-	digraph.get_adjacent( "Porto", pq );
-	while( !pq.empty() )
+	while( keep_going )
 	{
-		pair<string,int> edge = pq.top();
-		cout << "\t" << edge.first << " => " << edge.second << ".\n";
-		pq.pop();
+		int command = prompt( option_map );
+		switch( command )
+		{
+		case qq:
+			keep_going = false;
+			cout << "\nThanks for playing.  Have a nice day!" << endl;
+			break;
+		case hh:
+			option_hh();
+			break;
+		case av:
+			option_av( digraph, udgraph );
+			break;
+		case ae:
+			option_ae( digraph, udgraph );
+			break;
+		case de:
+			option_de( digraph, udgraph );
+			break;
+		case me:
+			option_me( digraph, udgraph );
+			break;
+		case gv:
+			option_gv( digraph, udgraph );
+			break;
+		case gn:
+			option_gn( digraph, udgraph );
+			break;
+		case ee:
+			option_ee( digraph, udgraph );
+			break;
+		case gw:
+			option_gw( digraph, udgraph );
+			break;
+		case ga:
+			option_ga( digraph, udgraph );
+			break;
+		case em:
+			option_em( digraph, udgraph );
+			break;
+		case fl:
+			option_fl( digraph, udgraph );
+			break;
+		case st:
+			option_st( digraph, udgraph );
+			break;
+		default:
+			cout << "Unrecognized command.  This shouldn't happen!" << endl;
+		}
 	}
-
-	digraph.delete_edge( "Porto", "Manila" );
-	cout << "Now edge Porto-Manila: ";
-	if( digraph.edge_exists( "Porto", "Manila" ) )
-		cout << "exists.\n";
-	else
-		cout << "doesn't exist.\n";
-	
-	digraph.make_empty();
-
-
     return 0;
 }
 
 void output_intro()
-{
-	cout << "graphtest: Explore the implementation of a Graph class by "
-		 << "David Oswald." << endl;
+{	
 	cout << "----------------------------------------------------------"
-		 << "-------------"    << endl << endl;
-	cout << "Two Graph objects will be instantiated: One digraph, and "
+		 << "---------------------"	   << endl;
+	cout << "|   graphtest: Explore the implementation of a Graph class by "
+		 << "David Oswald.   |"        << endl;
+	cout << "----------------------------------------------------------"
+		 << "---------------------"    << endl	<< endl;
+	cout << "Two Graph objects will be instantiated: One directed, and "
 		 << "one undirected graph."    << endl;
-	cout << "You will then be given options to facilitate manipulation "
-		 << "and inspection "          << endl;
-	cout << "of the Graph objects."   << endl << endl;
-	cout << "Each action will be applied to both Graphs, and output will "
-		 << "be generated to "         << endl;
+	cout << "You will be given options to manipulate and inspect the Graphs."
+		 << endl  << endl;
+	cout << "Actions will be applied to both Graphs.  Output will be generated to "
+		 << endl;
 	cout << "show how the action transformed each Graph." << endl << endl;
-	cout << "The Graph class is characterized by a template-defined "
-		 << "vertex type and an "      << endl;
-	cout << "integer-based edge weighting scheme wherein a non-zero edge "
-		 << "weight represents "       << endl
-		 <<	"an edge, or path exists." << endl << endl;
+	cout << "The Graph objects expect 'string' vertices, and integer edges." 
+		 << endl << endl;
 	return;
 }
 
 
-void report_state( Graph<string>& dg, Graph<string>& ug ) 
+void status_summary( Graph<string>& dg, Graph<string>& ug ) 
 { 
 	int dg_v_num = dg.num_vertices();
 	int ug_v_num = ug.num_vertices();
@@ -117,16 +187,11 @@ void report_state( Graph<string>& dg, Graph<string>& ug )
 		 << dg_v_num << "), (udgraph=" 
 		 << ug_v_num << ")." << endl;
 	if( dg_v_num || ug_v_num ) {
-		std::vector<string> dg_vertices, ug_vertices;
-		dg.get_vertices( dg_vertices );
-		ug.get_vertices( ug_vertices );
 		cout << "\t(digraph vertices: ";
-		for( std::vector<string>::iterator it = dg_vertices.begin(); it < dg_vertices.end(); ++it )
-			cout << "[" << *it << "] ";
+		display_vertices( dg );
 		cout << ")" << endl;
 		cout << "\t(udgraph vertices: ";
-		for( std::vector<string>::iterator it = ug_vertices.begin(); it < ug_vertices.end(); ++it )
-			cout << "[" << *it << "] ";
+		display_vertices( ug );
 		cout << ")" << endl;
 	}
 	return; 
@@ -134,23 +199,366 @@ void report_state( Graph<string>& dg, Graph<string>& ug )
 
 void list_commands()
 {
-	cout << "\nOptions are:"                               << endl
-		 << "\tManipulators:"                              << endl
-		 << "\t\tav(name)      = add vertex."              << endl
-		 << "\t\tae(name,name) = add edge."                << endl
-		 << "\t\tde(name,name) = delete edge."             << endl  
-		 << "\t\tme            = make graphs empty."       << endl
-	     << "\tAccessors:"                                 << endl
-		 << "\t\tgv            = get list of vertices."    << endl
-		 << "\t\tgn            = get number of vertices."  << endl
-		 << "\t\tee(name,name) = edge exists."             << endl
-		 << "\t\tgw(name,name) = get edge weight."         << endl
-		 << "\t\tga            = get adjacency list."      << endl
-	     << "\t\tie            = is empty?"                << endl
-		 << "\t\tif            = is_full?"                 << endl
-	     << "\tMiscellanious:"                             << endl
-		 << "\t\tqq            = quit test application."   << endl
-		 << "\t\thh            = display this help."       << endl
-		 << "\t\tst            = output a status summary." << endl << endl;
+	cout << "Options are:"                    << endl
+		 << "   Setters:   av = add vertex.        ae = add edge.         de = delete edge." << endl
+	     << "              me = make graphs empty."                                          << endl
+	     << "   Accessors: gv = get vertex list.   gn = get vertex count. ee = edge exists?" << endl
+		 << "              gw = edge weight.       ga = list adjancies.   em = Graph empty?" << endl
+		 << "              fl = Graph full?        st = status summary."                     << endl
+		 << "   Misc:      qq = quit testing.      hh = display this help."                  << endl << endl;
 	return;
 }
+
+
+int prompt( std::map<string,int>& options )
+{
+	string option = "";
+	int    option_value = qq;	// Initialize to quit, just to be safe.
+	bool   do_prompt = true;
+
+	while( do_prompt )
+	{
+		cout << "\nSelect an option (";
+		for( 
+			std::map<string,int>::iterator mit = options.begin(); 
+			mit != options.end(); 
+			++mit 
+		)
+		{
+			string op_name = mit->first;
+			if( op_name == "qq" || op_name == "hh" )
+				continue;
+			cout << op_name << ",";
+		}
+		cout << " qq=quit, hh=help): ";
+		getline(cin, option);
+		if( !options.count( option ) )
+		{
+			cout << "\n" << option << " is an invalid option.  Please choose again." << endl;
+			continue;
+		}
+		do_prompt = false;
+	}
+	return options.find( option )->second;
+}
+
+
+// Setters.
+void option_av( Graph<string>& dg, Graph<string>& ug ) 
+{ 
+	cout << "Enter a unique vertex (implemented as a string): ";
+	string vertex = "";
+	cin >> vertex;
+	cin.ignore();
+	try
+	{
+		if( dg.add_vertex(vertex) )
+			cout << vertex << " added to directed graph." << endl;
+		else
+			cout << vertex << " is already a member of directed graph." << endl;
+	}
+	catch( std::runtime_error& re )
+	{
+		cout << re.what() << ": Vertex not added to directed graph." << endl;
+		return;
+	}
+	try
+	{
+		if( ug.add_vertex(vertex) )
+			cout << vertex << " added to undirected graph." << endl;
+		else
+			cout << vertex << " is already a member of directed graph." << endl;
+	}
+	catch( std::runtime_error& re )
+	{
+		cout << re.what() << ": Vertex not added to undirected graph." << endl;
+		return;
+	}
+	status_summary( dg, ug );
+	return;
+}
+void option_ae( Graph<string>& dg, Graph<string>& ug ) { 
+	cout << "Add an edge by entering the first vertex name: ";
+	string va, vb;
+	int weight = 1;
+	getline( cin, va );
+	cout << "Now enter the second vertex name: ";
+	getline( cin, vb );
+	cout << "Enter a non-zero positive integral weight: ";
+	cin >> weight;
+	if( weight < 1 )
+	{
+		cout << "Invalid weight.  No edge added." << endl;
+		return;
+	}
+	bool dg_added = true;
+	bool ug_added = true;
+	if( dg.add_edge( va, vb, weight ) )
+		cout << "Edge (" << va << "," << vb << ") added to directed graph with "
+		     << "weight of " << weight << "." << endl;
+	else
+	{
+		cout << "Either vertex " << va << " or " << vb << " doesn't exist in the "
+		     << "directed graph." << endl;
+		dg_added = false;
+	}
+	if( ug.add_edge( va, vb, weight ) )
+		cout << "Edge (" << va << "," << vb << ") added to undirected graph with "
+		     << "weight of " << weight << "." << endl;
+	else
+	{
+		cout << "Either vertex " << va << " or " << vb << " doesn't exist in the "
+		     << "directed graph." << endl;
+		ug_added = false;
+	}
+	
+	if( dg_added )
+	{
+		cout << "Directed graph adjacencies for " << va << ": ";
+        display_adjacencies( dg, va );
+	}
+
+	if( ug_added )
+	{
+		cout << "Undirected graph adjacencies for " << va << ": ";
+		display_adjacencies( ug, va );
+	}
+	cin.ignore();
+	return;
+} // Add edge.
+
+void option_de( Graph<string>& dg, Graph<string>& ug ) 
+{ 
+	string va, vb;
+	cout << "Delete an edge by entering the first vertex's name: ";
+	getline( cin, va );
+	cout << "Now enter the second vertex's name: ";
+	getline( cin, vb );
+	bool dg_success = true;
+	bool ug_success = true;
+	try
+	{
+		dg.delete_edge( va, vb );
+	}
+	catch( std::runtime_error& re )
+	{
+		cout << re.what() << "\nNothing deleted from directed graph.\n";
+		dg_success = false;
+	}
+	try
+	{
+		ug.delete_edge( va, vb );
+	}
+	catch( std::runtime_error& re )
+	{
+		cout << re.what() << "\nNothing deleted from undirected graph.\n";
+		ug_success = false;
+	}
+	if( dg_success ) 
+	{
+		cout << "Directed graph adjacencies for " << va << " are:" << endl;
+		display_adjacencies( dg, va );
+	}
+	if( ug_success )
+	{
+		cout << "Undirected graph adjacencies for " << va << " are:" << endl;
+		display_adjacencies( ug, va );
+	}
+	return;
+} // Delete edge.
+
+
+void option_me( Graph<string>& dg, Graph<string>& ug ) { 
+	cout << "Clearing directed graph." << endl;
+	try
+	{
+		dg.make_empty();
+	}
+	catch( std::runtime_error& re )
+	{
+		cout << re.what() << "\nFailed to clear directed graph." << endl;
+	}
+	cout << "Clearing undirected graph." << endl;
+	try
+	{
+		ug.make_empty();
+	}
+	catch( std::runtime_error& re )
+	{
+		cout << re.what() << "\nFailed to clear undirected graph." << endl;
+	}
+	return;
+} // Make [graphs] empty.
+
+
+// Getters.
+void option_gv( Graph<string>& dg, Graph<string>& ug ) { 
+	cout << "Directed graph vertices: " << endl << "\t";
+	display_vertices(dg);
+	cout << endl;
+	cout << "Undirected graph vertices: " << endl << "\t";
+	display_vertices(ug);
+	cout << endl;
+	return;
+}
+
+
+void option_gn( Graph<string>& dg, Graph<string>& ug ) 
+{ 
+	cout << "The directed graph contains " << dg.num_vertices() << " vertices." << endl;
+	cout << "The undirected graph contains " << ug.num_vertices() << " vertices." << endl;
+	return;
+}
+
+
+void option_ee( Graph<string>& dg, Graph<string>& ug ) 
+{ 
+	string va, vb;
+	cout << "Check if an edge exists by entering the first vertex: ";
+	getline( cin, va );
+	cout << "Now specify the second vertex: ";
+	getline( cin, vb );
+	cout << "Directed graph: edge (" << va << "," << vb << ") ";
+	if( dg.edge_exists(va,vb) )
+		cout << "exists." << endl;
+	else
+		cout << "doesn't exist." << endl;
+	cout << "Undirected graph: edge (" << va << "," << vb << ") ";
+	if( ug.edge_exists(va,vb) )
+		cout << "exists." << endl;
+	else
+		cout << "doesn't exist." << endl;
+	return;
+}
+
+
+void option_gw( Graph<string>& dg, Graph<string>& ug ) 
+{ 
+	string va, vb;
+	cout << "Check an edge's weight by entering the first vertex: ";
+	getline( cin, va );
+	cout << "Now specify the second vertex: ";
+	getline( cin, vb );
+	cout << "Directed graph: edge (" << va << "," << vb << ") ";
+	try
+	{
+		int weight = dg.get_weight(va,vb);
+		cout << "has weight of " << weight << "." << endl;
+	}
+	catch( std::runtime_error& re )
+	{
+		cout << re.what() 
+			 << "\nOne or more of the vertices doesn't exist in directe graph." << endl;
+	}
+	cout << "Undirected graph: edge (" << va << "," << vb << ") ";
+	try
+	{
+		int weight = ug.get_weight(va,vb);
+		cout << "has weight of " << weight << "." << endl;
+	}
+	catch( std::runtime_error& re )
+	{
+		cout << re.what()
+			 << "\nOne or more of the vertices doesn't exist in undirected graph." << endl;
+	}
+	return;
+}
+
+
+void option_ga( Graph<string>& dg, Graph<string>& ug ) { 
+	cout << "Enter vertex name to view adjacency list: ";
+	string vertex;
+	getline( cin, vertex );
+	cout << "Directed graph adjacencies for " << vertex << ": ";
+	display_adjacencies( dg, vertex );
+	cout << endl;
+	cout << "Undirected graph adjacencies for " << vertex << ": ";
+	display_adjacencies( ug, vertex );
+	cout << endl;
+	return;
+} // Get adjacency list.
+
+
+void option_em( Graph<string>& dg, Graph<string>& ug ) 
+{ 
+	cout << "Directed graph is ";
+	if( dg.is_empty() )
+		cout << "empty." << endl;
+	else
+		cout << "not empty." << endl;
+	cout << "Undirected graph is ";
+	if( ug.is_empty() )
+		cout << "empty." << endl;
+	else
+		cout << "not empty." << endl;
+	return;
+}
+
+
+void option_fl( Graph<string>& dg, Graph<string>& ug ) 
+{ 
+	cout << "Directed graph is ";
+	if( dg.is_full() )
+		cout << "full." << endl;
+	else
+		cout << "not full." << endl;
+	cout << "Undirected graph is ";
+	if( ug.is_full() )
+		cout << "full." << endl;
+	else
+		cout << "not full." << endl;
+	return;
+}
+
+
+void option_st( Graph<string>& dg, Graph<string>& ug ) { 
+	status_summary( dg, ug );
+	return;
+}
+
+
+// Miscellaneous.
+// void option_qq() {} -- Quit test application. -- Implemented inline, not as function.
+
+void option_hh() 
+{ 
+	list_commands(); 
+	return; 
+} // Display this help.
+
+
+void display_adjacencies( Graph<string>& graph, string va ) 
+{
+	string_intPQ pq;
+	try
+	{
+		graph.get_adjacent( va, pq );
+		while( !pq.empty() )
+		{
+			pair<string,int> edge = pq.top();
+			cout << " [" << edge.first << " => " << edge.second << "]";
+			pq.pop();
+		}
+		cout << "." << endl;
+	}
+	catch( std::runtime_error& re )
+	{
+		cout << re.what();
+	}
+	return;
+}
+
+
+void display_vertices( Graph<string>& graph )
+{
+	std::vector<string> vertices;
+	graph.get_vertices( vertices );
+	for( 
+		std::vector<string>::iterator it = vertices.begin(); 
+		it != vertices.end(); 
+		++it 
+	)
+		cout << "[" << *it << "] ";
+	return;
+}
+
