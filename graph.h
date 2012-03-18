@@ -74,12 +74,12 @@ class Graph {
     ) const;
   private:
     int     index_is ( VertexT  v ) const;
-    VertexT vertex_is( unsigned i ) const;
+    VertexT vertex_is( std::vector<int>::size_type i ) const;
 
 	bool directed;
-    std::vector< std::vector< int > > matrix;	// Adjacency matrix.
-    std::map<VertexT,int>             v_to_i;   // Map Vertices to indices.
-    std::vector< VertexT >            i_to_v;	// xref indices to Vertices.
+    std::vector< std::vector< int > >             matrix; // Adjacency matrix.
+    std::map<VertexT,std::vector<int>::size_type> v_to_i; // Verts to idx's.
+    std::vector< VertexT >                        i_to_v; // idx's to Verts.
 };
 
 

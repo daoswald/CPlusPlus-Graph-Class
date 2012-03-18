@@ -33,11 +33,11 @@ bool Graph<VertexT>::add_vertex( VertexT v )
 
     // Add the vertex to our crossreference lookups.
 	// First, the vertex to index crossref.
-	pair< map< VertexT, int >::iterator,bool > v_to_i_ret;
+	pair< map< VertexT, std::vector<int>::size_type >::iterator,bool > v_to_i_ret;
 	try
 	{ 
 	    v_to_i_ret 
-			= v_to_i.insert( pair< VertexT, int >( v, v_to_i.size() ) );
+			= v_to_i.insert( pair< VertexT, std::vector<int>::size_type >( v, v_to_i.size() ) );
 	}
 	catch( std::bad_alloc& ba )
 	{
@@ -182,7 +182,7 @@ template<class VertexT>
 int Graph<VertexT>::index_is( VertexT v ) const
 {
     using std::map;
-    map<VertexT,int>::const_iterator idx_it = v_to_i.find( v );
+    map<VertexT,std::vector<int>::size_type>::const_iterator idx_it = v_to_i.find( v );
     if( idx_it == v_to_i.end() )
         return -1;  // Sentinal flag: Vertex doesn't exist!
     else
@@ -191,7 +191,7 @@ int Graph<VertexT>::index_is( VertexT v ) const
 
 // Get the vertex for index i.  Throw if vertex not found.
 template<class VertexT>
-VertexT Graph<VertexT>::vertex_is( unsigned i ) const
+VertexT Graph<VertexT>::vertex_is( std::vector<int>::size_type i ) const
 {
     using std::map;
     using std::runtime_error;

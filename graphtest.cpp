@@ -228,7 +228,7 @@ int prompt( std::map<string,int>& options )
 	{
 		cout << "\nSelect an option (";
 		for( 
-			std::map<string,int>::iterator mit = options.begin(); 
+			std::map<string,int>::const_iterator mit = options.begin(); 
 			mit != options.end(); 
 			++mit 
 		)
@@ -630,7 +630,7 @@ void display_vertices( Graph<string>& graph )
 	std::vector<string> vertices;
 	graph.get_vertices( vertices );
 	for( 
-		std::vector<string>::iterator it = vertices.begin(); 
+		std::vector<string>::const_iterator it = vertices.begin(); 
 		it != vertices.end(); 
 		++it 
 	)
