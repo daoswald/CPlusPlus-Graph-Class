@@ -28,7 +28,7 @@ template< typename VertexT >
 struct PairComparator {
 	bool operator()( 
 		const std::pair<VertexT,int>& p1, 
-		const std::pair<VertexT, int>& p2 
+		const std::pair<VertexT,int>& p2 
 	) const 
     {  
 		if( p1.second > p2.second ) 
@@ -55,30 +55,30 @@ class Graph {
   public:
     Graph( bool is_directed = true ) { directed = is_directed; return; }
     ~Graph(){ return; }
-    bool add_vertex( VertexT V ); // Tested.
-	int  get_vertices( std::vector<VertexT>& vertices ); // Tested.
-	int  num_vertices();
+    bool add_vertex( VertexT V );
+	int  get_vertices( std::vector<VertexT>& vertices ) const;
+	int  num_vertices() const;
     void make_empty();
-    bool is_empty();
-    bool is_full() const;
+    bool is_empty()     const;
+    bool is_full()      const;
     bool add_edge( VertexT va, VertexT vb, int weight = 1 );
-    bool edge_exists( VertexT va, VertexT vb ); // Assignment 2.
-    void delete_edge( VertexT va, VertexT vb ); // Assignment 2.
-    int  get_weight ( VertexT va, VertexT vb ); // Better than edge_exists().
+    bool edge_exists( VertexT va, VertexT vb ) const; // Assignment 2.
+    void delete_edge( VertexT va, VertexT vb );       // Assignment 2.
+    int  get_weight ( VertexT va, VertexT vb ) const; // Even better.
     void get_adjacent(
         VertexT v, 
 		std::priority_queue< std::pair<VertexT,int>, 
 			                 std::vector< std::pair<VertexT,int> 
 		>, 
 		PairComparator< VertexT > >& pq
-    );
+    ) const;
   private:
-    int     index_is ( VertexT  v );
-    VertexT vertex_is( unsigned i );
+    int     index_is ( VertexT  v ) const;
+    VertexT vertex_is( unsigned i ) const;
 
 	bool directed;
     std::vector< std::vector< int > > matrix;	// Adjacency matrix.
-    std::map< VertexT, int >          v_to_i;   // Map Vertices to indices.
+    std::map<VertexT,int>             v_to_i;   // Map Vertices to indices.
     std::vector< VertexT >            i_to_v;	// xref indices to Vertices.
 };
 

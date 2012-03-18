@@ -36,7 +36,8 @@ bool Graph<VertexT>::add_vertex( VertexT v )
 	pair< map< VertexT, int >::iterator,bool > v_to_i_ret;
 	try
 	{ 
-	    v_to_i_ret = v_to_i.insert( pair< VertexT, int >( v, v_to_i.size() ) );
+	    v_to_i_ret 
+			= v_to_i.insert( pair< VertexT, int >( v, v_to_i.size() ) );
 	}
 	catch( std::bad_alloc& ba )
 	{
@@ -66,7 +67,7 @@ bool Graph<VertexT>::add_vertex( VertexT v )
 
     // Add a column to each existing row of the matrix for this new vertex.
     vector<vector<int> >::iterator it;
-    for( it=matrix.begin(); it < matrix.end(); ++it )
+    for( it=matrix.begin(); it != matrix.end(); ++it )
 	{
 		try
 		{
@@ -82,9 +83,9 @@ bool Graph<VertexT>::add_vertex( VertexT v )
 		}
 	}
 
-    // Note: v_to_i.size() will now return the number of elements inclusive of
-    // the new vertex, so we can use that as the number of columns for our
-    // new row.
+    // Note: v_to_i.size() will now return the number of elements inclusive
+    // of the new vertex, so we can use that as the number of columns for
+    // our new row.
 
     // Add a new row to the matrix for this new vertex.
     vector<int> row( v_to_i.size(), NON_EDGE ); // Create a new row to insert
@@ -97,12 +98,12 @@ bool Graph<VertexT>::add_vertex( VertexT v )
 // Passes by reference a vector containing all the vertex names.
 // Returns a vertex count.
 template<class VertexT>
-int Graph<VertexT>::get_vertices( std::vector<VertexT>& vertices )
+int Graph<VertexT>::get_vertices( std::vector<VertexT>& vertices ) const
 {
 	using std::map;
 	using std::pair;
 	int size = num_vertices();
-	vector<VertexT>::iterator vit;
+	vector<VertexT>::const_iterator vit;
 	for( vit = i_to_v.begin(); vit != i_to_v.end(); ++vit )
 	{
 		vertices.push_back( *vit );
@@ -112,7 +113,7 @@ int Graph<VertexT>::get_vertices( std::vector<VertexT>& vertices )
 
 // Returns a vertex count.
 template<class VertexT>
-int Graph<VertexT>::num_vertices()
+int Graph<VertexT>::num_vertices() const
 {
 	using std::runtime_error;
 	if( i_to_v.size() != v_to_i.size() || v_to_i.size() != matrix.size() )
@@ -140,13 +141,16 @@ void Graph<VertexT>::make_empty()
 
 // Returns true if the graph is empty.
 template<class VertexT>
-bool Graph<VertexT>::is_empty()
+bool Graph<VertexT>::is_empty() const
 {
 	using std::runtime_error;
-	if( i_to_v.empty() != v_to_i.empty() || v_to_i.empty() != matrix.empty() )
+	if( 
+		i_to_v.empty() != v_to_i.empty()	||
+		v_to_i.empty() != matrix.empty() 
+	)
 		throw( runtime_error(
 			"Graph components out of sync: detected in is_empty()"
-		) ); // This should be impossible.  Just a sanity check.
+		) );	// This should be impossible.  Just a sanity check.
     return matrix.empty(); // Returns true for empty, false otherwise.
 }
 
@@ -175,11 +179,10 @@ bool Graph<VertexT>::is_full() const
 
 // Get the index of a vertex v.  Return -1 if not found.
 template<class VertexT>
-int Graph<VertexT>::index_is( VertexT v )
+int Graph<VertexT>::index_is( VertexT v ) const
 {
     using std::map;
-    map<VertexT,int>::iterator idx_it;
-    idx_it = v_to_i.find( v );
+    map<VertexT,int>::const_iterator idx_it = v_to_i.find( v );
     if( idx_it == v_to_i.end() )
         return -1;  // Sentinal flag: Vertex doesn't exist!
     else
@@ -188,13 +191,14 @@ int Graph<VertexT>::index_is( VertexT v )
 
 // Get the vertex for index i.  Throw if vertex not found.
 template<class VertexT>
-VertexT Graph<VertexT>::vertex_is( unsigned i )
+VertexT Graph<VertexT>::vertex_is( unsigned i ) const
 {
     using std::map;
     using std::runtime_error;
 	if( i > i_to_v.size() - 1 )
 		throw( runtime_error(
-			"vertex_is() called on an out of range index: No vertex by that index."
+			"vertex_is() called on an out of range index: "
+			"No vertex by that index."
 		) );
 	else
 		return i_to_v[i];
@@ -222,7 +226,7 @@ bool Graph<VertexT>::add_edge( VertexT va, VertexT vb, int weight )
 // Returns true if an edge exists.  False if edge doesn't exist, or
 // also if one of the specified vertices doesn't exist.
 template<class VertexT>
-bool Graph<VertexT>::edge_exists( VertexT va, VertexT vb )
+bool Graph<VertexT>::edge_exists( VertexT va, VertexT vb ) const
 {
     int row = index_is( va );
     int col = index_is( vb );
@@ -257,7 +261,7 @@ void Graph<VertexT>::delete_edge( VertexT va, VertexT vb )
 // Returns the weight of an edge.  Throws if a vertex doesn't exist.
 // If an edge doesn't exist, returns NON_EDGE, which is defined as 0.
 template<class VertexT>
-int Graph<VertexT>::get_weight( VertexT va, VertexT vb )
+int Graph<VertexT>::get_weight( VertexT va, VertexT vb ) const
 {
 	using std::runtime_error;
     int row = index_is( va );
@@ -279,7 +283,7 @@ void Graph<VertexT>::get_adjacent(
 	std::priority_queue< std::pair<VertexT,int>, 
 						 std::vector< std::pair<VertexT,int> >, 
 						 PairComparator< VertexT > >& pq
-)
+) const
 {
 	using std::runtime_error;
 	using std::pair;
