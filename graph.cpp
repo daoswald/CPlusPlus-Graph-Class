@@ -3,6 +3,9 @@
 // Assignment 2: Graphs.
 
 
+// Version 0.02: See graph.h for explanation.
+
+
 #include <stdexcept>                // runtime_error()
 #include <vector>                   // vector, vector<>::iterator
 #include <map>                      // map, pair

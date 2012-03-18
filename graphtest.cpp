@@ -28,6 +28,9 @@
 //     -- Dave
 
 
+// Version 0.02: Code cleanup, and const correctness in Graph class.
+
+
 #include "graph.h"
 
 #include <string>

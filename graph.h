@@ -3,6 +3,13 @@
 // Assignment 2: Graphs.
 
 
+// Version: 0.02
+// Version notes:
+//    Changes from 0.01:
+//        Const correctness in Graph class.
+//        General code cleanup.
+
+
 // graph.h.  Template class declarations for the Graph class.
 // "#include"s the graph.cpp file at the end of this file.
 

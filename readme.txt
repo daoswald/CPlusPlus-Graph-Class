@@ -68,3 +68,9 @@ implemented one.  This was a great excuse to dive into a bunch of my books
 again and read up.  THANKS!
 
 Dave
+
+
+Version: 0.02 -- Change log:
+    -- Const correctness in Graph class
+    -- Const iterators in display-only functions within driver program.
+    -- General code cleanup (formatting, etc.)
