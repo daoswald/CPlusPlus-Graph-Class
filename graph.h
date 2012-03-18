@@ -61,18 +61,18 @@ template< class VertexT=char >
 class Graph {
   public:
     Graph( bool is_directed = true ) { directed = is_directed; return; }
-    ~Graph(){ return; }
-    bool add_vertex( VertexT V );
-	int  get_vertices( std::vector<VertexT>& vertices ) const;
-	int  num_vertices() const;
-    void make_empty();
-    bool is_empty()     const;
-    bool is_full()      const;
-    bool add_edge( VertexT va, VertexT vb, int weight = 1 );
-    bool edge_exists( VertexT va, VertexT vb ) const; // Assignment 2.
-    void delete_edge( VertexT va, VertexT vb );       // Assignment 2.
-    int  get_weight ( VertexT va, VertexT vb ) const; // Even better.
-    void get_adjacent(
+    virtual ~Graph(){ return; }
+    virtual bool add_vertex( VertexT V );
+	virtual int  get_vertices( std::vector<VertexT>& vertices ) const;
+	virtual int  num_vertices() const;
+    virtual void make_empty();
+    virtual bool is_empty()     const;
+    virtual bool is_full()      const;
+    virtual bool add_edge( VertexT va, VertexT vb, int weight = 1 );
+    virtual bool edge_exists( VertexT va, VertexT vb ) const; // Assignment 2.
+    virtual void delete_edge( VertexT va, VertexT vb );       // Assignment 2.
+    virtual int  get_weight ( VertexT va, VertexT vb ) const; // Even better.
+    virtual void get_adjacent(
         VertexT v, 
 		std::priority_queue< std::pair<VertexT,int>, 
 			                 std::vector< std::pair<VertexT,int> 
@@ -80,8 +80,8 @@ class Graph {
 		PairComparator< VertexT > >& pq
     ) const;
   private:
-    int     index_is ( VertexT  v ) const;
-    VertexT vertex_is( std::vector<int>::size_type i ) const;
+    virtual int     index_is ( VertexT  v ) const;
+    virtual VertexT vertex_is( std::vector<int>::size_type i ) const;
 
 	bool directed;
     std::vector< std::vector< int > >             matrix; // Adjacency matrix.
