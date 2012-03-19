@@ -3,3 +3,4 @@ csit832a2/
 *.o
 *.cppcheck
 *.zip
+*.out
