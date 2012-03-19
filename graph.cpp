@@ -39,7 +39,7 @@ bool Graph<VertexT>::add_vertex( VertexT v )
     pair<
         typename map<
             VertexT,
-            typename std::vector<int>::size_type
+            std::vector<int>::size_type
         >::iterator,
         bool
     > v_to_i_ret;
@@ -192,7 +192,7 @@ int Graph<VertexT>::index_is( VertexT v ) const
     using std::map;
     typename map<
         VertexT,
-        typename std::vector<int>::size_type
+        std::vector<int>::size_type
     >::const_iterator idx_it
         = v_to_i.find( v );
     if( idx_it == v_to_i.end() )
